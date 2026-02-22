@@ -47,19 +47,22 @@ func targetDep(name: String, package: String) -> Target.Dependency {
 }
 
 // MARK: - Dependencies
-let core = targetDep(name: "Core", package: "Core")
-let trinkets = targetDep(name: "Trinkets", package: "Trinkets")
+let mathe = targetDep(name: "Mathe", package: "Mathe")
 
 let dependencies: [Package.Dependency] = [
-    dep(local: "../Core"),
-    dep(local: "../Trinkets")
+    .package(url: "https://github.com/MartonioJunior/Mathe", branch: "main")
 ]
 
 // MARK: - Targets
 let targets: [Target] = [
     .target(
+        name: "Colors",
+        dependencies: [mathe],
+        swiftSettings: .upcomingFeatures
+    ),
+    .target(
         name: "Shades",
-        dependencies: [core, trinkets],
+        dependencies: ["Colors"],
         swiftSettings: .upcomingFeatures
     )
 ]
@@ -69,12 +72,9 @@ let testTargets: [Target] = targets.map {
 }
 
 // MARK: - Products
-let products: [Product] = [
-    .library(
-        name: "Shades",
-        targets: ["Shades"]
-    )
-]
+let products: [Product] = targets.map {
+    .library(name: $0.name, targets: [$0.name])
+}
 
 // MARK: - Supported Platforms
 let supportedPlatforms: [SupportedPlatform] = [
